@@ -5,6 +5,9 @@ import "flatpickr/dist/flatpickr.min.css";
 //подключение библиотеки Notiflix
 import {Report} from 'notiflix/build/notiflix-report-aio';
 
+//поиск кнопки
+const btnStart = document.querySelector('button[data-start]');
+
 //объект параметров Flatpickr
 const options = {
 	enableTime: true,
@@ -13,6 +16,13 @@ const options = {
 	minuteIncrement: 1,
 	onClose(selectedDates) {
 		console.log(selectedDates[0]);
+		//вывод предупреждения корректности
+		if (selectedDates[0] < new Date()) {
+			Report.warning('ATTENTION', '"Please choose a date in the future"', '🎬');
+		} else {
+			//разблокировка кнопки
+			btnStart.disabled = false;
+		}
 	},
 };
 
@@ -46,18 +56,12 @@ function convertMs(ms) {
 
 	return { days, hours, minutes, seconds };
 }
-
-//поиск и прослушивание кнопки
-document.querySelector('button[data-start]').addEventListener('click', onClick);
+//прослушивание кнопки
+btnStart.addEventListener('click', onClick);
 
 //колбек-функция клика
 function onClick() {
 	const selectedDate = flatpickrValue.selectedDates[0];
-	//вывод предупреждения корректности
-	if (selectedDate < new Date()) {
-		Report.warning('ATTENTION', '"Please choose a date in the future"', '🎬');
-		return;
-	}
 	//функция обратного отсчёта
 	function countdown() {
 		const currentDate = new Date();
